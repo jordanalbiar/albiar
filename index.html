@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light dark" />
+<meta name="description" content="Albiar Portal: one splash page for every Albiar project website. Each site lives as HTML in its own GitHub repo and opens here in a popup at 95 percent of the screen, starting with Nova Bot." />
+<link rel="icon" href="data:," />
+<title>Albiar Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    color-scheme: light dark;
+    --bg:#eef3f5;
+    --bg-2:#e2ebee;
+    --surface:#ffffff;
+    --surface-2:#f4f8f9;
+    --ink:#0a1c28;
+    --ink-2:#3d5566;
+    --ink-3:#6b8596;
+    --line:#c9d8de;
+    --line-strong:#9fb8c2;
+    --accent:#1496ba;
+    --accent-deep:#0d6f8c;
+    --accent-soft:#dff3f9;
+    --live:#0f9d6c;
+    --live-bg:#dcf5ea;
+    --amber:#9a6a00;
+    --amber-bg:#fdf0cd;
+    --red:#b3352c;
+    --red-deep:#8f2a23;
+    --navy:#071824;
+    --shadow:0 10px 30px rgba(7,24,36,.10);
+    --shadow-lg:0 18px 44px rgba(7,24,36,.16);
+    --grid-line:rgba(20,150,186,.10);
+    --radius:14px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#06121a;
+      --bg-2:#081a26;
+      --surface:#0b2233;
+      --surface-2:#0e2a3f;
+      --ink:#e8f4f8;
+      --ink-2:#a9c4d1;
+      --ink-3:#7393a5;
+      --line:#1c3f55;
+      --line-strong:#2b5a78;
+      --accent:#2db9e6;
+      --accent-deep:#7ed6f5;
+      --accent-soft:#0f344a;
+      --live:#3dd598;
+      --live-bg:#0e3a2b;
+      --amber:#f2c94c;
+      --amber-bg:#3a2f0e;
+      --red:#e0655c;
+      --red-deep:#f08a82;
+      --shadow:0 10px 30px rgba(0,0,0,.35);
+      --shadow-lg:0 18px 44px rgba(0,0,0,.45);
+      --grid-line:rgba(45,185,230,.09);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    font-family:"Public Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    background:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
+      linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+    background-size:36px 36px,36px 36px,100% 100%;
+    color:var(--ink);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit}
+  button, a.btn, .filter-btn{min-height:44px}
+  .wrap{width:min(1120px,100%);margin:0 auto;padding:0 20px}
+  [hidden]{display:none !important}
+
+  /* Top bar */
+  .topbar{
+    position:sticky;top:0;z-index:20;
+    backdrop-filter:blur(10px);
+    background:color-mix(in srgb, var(--bg) 86%, transparent);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar-in{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:64px;flex-wrap:wrap;padding-top:8px;padding-bottom:8px}
+  .brand{display:flex;align-items:center;gap:12px;text-decoration:none;min-height:44px}
+  .brand-mark{
+    width:38px;height:38px;border-radius:9px;flex:0 0 38px;
+    background:var(--navy);color:#fff;display:grid;place-items:center;
+    font-family:"Archivo",sans-serif;font-weight:900;font-size:20px;letter-spacing:-.02em;
+    border:1px solid rgba(255,255,255,.14);
+    box-shadow:inset 0 0 0 1px rgba(20,150,186,.45);
+  }
+  @media (prefers-color-scheme: dark){ .brand-mark{background:#0e2f45} }
+  .brand-text{line-height:1.05}
+  .brand-text strong{font-family:"Archivo",sans-serif;font-weight:800;letter-spacing:.14em;font-size:15px;display:block}
+  .brand-text span{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+  .top-links{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+  .top-link{
+    display:inline-flex;align-items:center;gap:8px;text-decoration:none;
+    font-weight:600;font-size:14px;padding:10px 14px;border-radius:999px;
+    border:1px solid var(--line);background:var(--surface);
+  }
+  .top-link:hover{border-color:var(--accent);color:var(--accent-deep)}
+  .top-link svg{width:18px;height:18px;flex:0 0 18px}
+
+  /* Hero */
+  .hero{padding:44px 0 8px}
+  .hero-grid{display:grid;grid-template-columns:1.35fr .65fr;gap:28px;align-items:end}
+  .kicker{
+    font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--accent-deep);
+    display:flex;align-items:center;gap:10px;margin:0 0 14px;
+  }
+  .kicker::before{content:"";width:28px;height:2px;background:var(--accent);display:inline-block}
+  h1{
+    font-family:"Archivo",sans-serif;font-weight:900;letter-spacing:-.03em;
+    font-size:clamp(38px,6vw,62px);line-height:.98;margin:0;max-width:13ch;
+  }
+  h1 .accent{color:var(--accent)}
+  .hero-sub{margin:18px 0 0;font-size:17px;color:var(--ink-2);max-width:58ch}
+  .hero-sub strong{color:var(--ink)}
+  .hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    text-decoration:none;font-weight:700;font-size:15px;
+    padding:12px 18px;border-radius:10px;border:1px solid transparent;cursor:pointer;
+    font-family:inherit;background:var(--surface);color:var(--ink);
+  }
+  .btn-primary{background:var(--accent);color:#fff}
+  .btn-primary:hover{background:var(--accent-deep)}
+  @media (prefers-color-scheme: dark){ .btn-primary{color:#04141d} .btn-primary:hover{color:#04141d} }
+  .btn-ghost{background:var(--surface);border-color:var(--line);color:var(--ink)}
+  .btn-ghost:hover{border-color:var(--accent)}
+  .btn[aria-disabled="true"]{opacity:.55;pointer-events:none}
+
+  .hero-panel{
+    background:var(--navy);color:#eaf6fb;border-radius:var(--radius);
+    padding:20px;border:1px solid #14344a;position:relative;overflow:hidden;
+  }
+  @media (prefers-color-scheme: dark){ .hero-panel{background:#081c2c;border-color:#1c435f} }
+  .hero-panel::after{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:
+      linear-gradient(rgba(45,185,230,.10) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(45,185,230,.10) 1px, transparent 1px);
+    background-size:28px 28px;opacity:.7;
+  }
+  .hero-panel > *{position:relative;z-index:1}
+  .hero-panel h2{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#7ed6f5;margin:0 0 14px;font-weight:600}
+  .stat-row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid rgba(255,255,255,.10)}
+  .stat-row:first-of-type{border-top:0;padding-top:0}
+  .stat-row dt{font-size:13px;color:#9fc3d4;margin:0}
+  .stat-row dd{margin:0;font-family:"IBM Plex Mono",monospace;font-size:13px;font-weight:600;text-align:right}
+  dl{margin:0}
+
+  /* Toolbar */
+  .toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin:34px 0 16px}
+  .toolbar h2{font-family:"Archivo",sans-serif;font-size:22px;font-weight:800;letter-spacing:-.02em;margin:0}
+  .toolbar p{margin:2px 0 0;color:var(--ink-2);font-size:14px}
+  .filters{display:flex;gap:8px;flex-wrap:wrap}
+  .filter-btn{
+    appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);
+    font:inherit;font-weight:600;font-size:14px;padding:10px 16px;border-radius:999px;cursor:pointer;
+  }
+  .filter-btn[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+  @media (prefers-color-scheme: dark){ .filter-btn[aria-pressed="true"]{background:#e8f4f8;color:#071824;border-color:#e8f4f8} }
+
+  /* Cards */
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding-bottom:8px}
+  .card{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow);
+  }
+  .card.featured{grid-column:1 / -1;display:grid;grid-template-columns:1.05fr .95fr;box-shadow:var(--shadow-lg)}
+  .card-media{background:#000;min-height:220px;position:relative}
+  .card-media img{width:100%;height:100%;object-fit:contain;display:block;position:absolute;inset:0}
+  .card-media::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg, transparent 55%, rgba(4,16,24,.55));pointer-events:none}
+  .card-body{padding:22px;display:flex;flex-direction:column;gap:12px;flex:1}
+  .card-top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+  .badge{
+    display:inline-flex;align-items:center;gap:7px;font-family:"IBM Plex Mono",monospace;
+    font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+    padding:6px 10px;border-radius:999px;
+  }
+  .badge-live{background:var(--live-bg);color:var(--live)}
+  .badge-soon{background:var(--amber-bg);color:var(--amber)}
+  .badge-built{background:var(--accent-soft);color:var(--accent-deep)}
+  .badge .dot{width:8px;height:8px;border-radius:50%;background:currentColor;flex:0 0 8px}
+  .badge-live .dot{animation:pulse 1.8s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  @media (prefers-reduced-motion: reduce){ .badge-live .dot{animation:none} html{scroll-behavior:auto} }
+  .version{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-3)}
+  .card h3{font-family:"Archivo",sans-serif;font-size:28px;font-weight:800;letter-spacing:-.02em;line-height:1.05;margin:0}
+  .card.placeholder h3{font-size:21px;color:var(--ink-2)}
+  .card-desc{margin:0;color:var(--ink-2);font-size:15px}
+  .tags{display:flex;gap:8px;flex-wrap:wrap}
+  .tag{font-size:12.5px;font-weight:600;padding:6px 10px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);color:var(--ink-2)}
+  .url-line{
+    font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--ink-2);
+    background:var(--surface-2);border:1px solid var(--line);border-radius:8px;
+    padding:10px 12px;word-break:break-all;
+  }
+  .url-line span{color:var(--ink-3)}
+  .card-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:6px}
+  .card-actions .btn{flex:1 1 auto;font-size:14px;padding:11px 14px}
+  .host-note{font-size:12.5px;color:var(--ink-3);margin:0}
+  .host-note strong{color:var(--ink-2)}
+
+  .card.placeholder{
+    background:transparent;box-shadow:none;border-style:dashed;border-color:var(--line-strong);
+    min-height:300px;
+  }
+  .placeholder-art{
+    height:110px;display:grid;place-items:center;border-bottom:1px dashed var(--line-strong);
+    background:var(--surface-2);color:var(--ink-3);
+    font-family:"Archivo",sans-serif;font-size:34px;font-weight:800;
+  }
+  .card.placeholder .card-body{padding:18px}
+  .is-hidden{display:none !important}
+  .empty-note{
+    display:none;border:1px dashed var(--line-strong);border-radius:var(--radius);
+    padding:22px;text-align:center;color:var(--ink-2);background:var(--surface);
+  }
+  .empty-note.show{display:block}
+
+  /* How it works */
+  .how{margin:36px 0 0;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+  .how-head{padding:20px 22px 4px}
+  .how-head h2{font-family:"Archivo",sans-serif;font-size:22px;font-weight:800;letter-spacing:-.02em;margin:0}
+  .how-head p{margin:6px 0 0;color:var(--ink-2);font-size:14.5px;max-width:62ch}
+  .steps{display:grid;grid-template-columns:repeat(3,1fr)}
+  .step{padding:20px 22px 22px;border-top:1px solid var(--line)}
+  .step + .step{border-left:1px solid var(--line)}
+  .step-num{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;letter-spacing:.12em;color:var(--accent-deep);text-transform:uppercase}
+  .step h3{font-family:"Archivo",sans-serif;font-size:16px;margin:8px 0 6px;font-weight:700}
+  .step p{margin:0;font-size:14px;color:var(--ink-2)}
+  .step code{font-family:"IBM Plex Mono",monospace;font-size:12.5px;background:var(--accent-soft);padding:2px 6px;border-radius:5px;color:var(--ink)}
+
+  /* ===== Site popup viewer (95% of screen) ===== */
+  .site-modal{
+    position:fixed;inset:0;z-index:60;display:grid;place-items:center;
+    background:rgba(4,16,24,.74);
+  }
+  .site-modal-box{
+    width:95vw;height:95vh;height:95dvh;display:flex;flex-direction:column;
+    background:var(--surface);border:1px solid var(--line-strong);border-radius:12px;
+    overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.5);
+  }
+  .site-modal-bar{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    padding:10px 14px;border-bottom:1px solid var(--line);background:var(--surface-2);
+  }
+  .site-modal-title{font-family:"Archivo",sans-serif;font-size:17px;font-weight:800;letter-spacing:-.01em;margin:0;line-height:1.2}
+  .site-modal-url{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-3);word-break:break-all}
+  .site-modal-actions{display:flex;gap:8px;flex-wrap:wrap}
+  .site-modal-actions .btn{min-height:40px;padding:8px 14px;font-size:13.5px}
+  .site-frame-wrap{position:relative;flex:1;background:#fff}
+  .site-frame{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;background:#fff}
+  .site-modal-status{
+    position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:24px;
+    color:var(--ink-2);background:var(--surface);font-size:15px;
+  }
+  body.modal-open{overflow:hidden}
+
+  /* Footer */
+  footer{margin-top:36px;border-top:1px solid var(--line);padding:26px 0 36px}
+  .foot{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:flex-start}
+  .foot p{margin:0;color:var(--ink-2);font-size:14px;max-width:52ch}
+  .foot strong{color:var(--ink)}
+  .foot-links{display:flex;gap:8px;flex-wrap:wrap}
+  .foot-links a{
+    display:inline-flex;align-items:center;min-height:40px;padding:8px 12px;
+    border:1px solid var(--line);border-radius:999px;background:var(--surface);
+    text-decoration:none;font-size:13.5px;font-weight:600;
+  }
+  .foot-links a:hover{border-color:var(--accent)}
+  .fineprint{margin-top:16px;font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-3);letter-spacing:.04em}
+
+  @media (max-width:860px){
+    .hero-grid{grid-template-columns:1fr}
+    .card.featured{grid-template-columns:1fr}
+    .card-media{min-height:200px;position:relative;height:210px}
+    .grid{grid-template-columns:1fr}
+    .steps{grid-template-columns:1fr}
+    .step + .step{border-left:0}
+    .hero{padding-top:30px}
+    .feature-grid{grid-template-columns:1fr}
+    .inside-cols{grid-template-columns:1fr}
+    .fact-list{grid-template-columns:1fr}
+    .top-link span{display:none}
+    .update-item{flex-direction:column;gap:4px}
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <a class="brand" href="#top" aria-label="Albiar Portal home">
+      <span class="brand-mark" aria-hidden="true">A</span>
+      <span class="brand-text"><strong>ALBIAR</strong><span>Portal</span></span>
+    </a>
+    <nav class="top-links" aria-label="Portal links">
+      <button class="btn btn-primary" type="button" data-open-site data-site-name="Nova Bot" data-site-url="https://jordanalbiar.github.io/nova-bot/" style="padding:10px 16px;font-size:14px">Nova Bot site</button>
+      <a class="top-link" href="https://github.com/jordanalbiar" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.285 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+        <span>github.com/jordanalbiar</span>
+      </a>
+    </nav>
+  </div>
+</header>
+
+<main id="top" class="wrap">
+
+  <!-- ================= PORTAL VIEW ================= -->
+  <div id="view-portal">
+
+    <section class="hero" aria-labelledby="page-title">
+      <div class="hero-grid">
+        <div>
+          <p class="kicker">Albiar project hub</p>
+          <h1 id="page-title">Every Albiar project site, <span class="accent">one front door.</span></h1>
+          <p class="hero-sub">Each project website lives as HTML in its own GitHub repo, published with GitHub Pages. This portal loads a site straight from its repo and displays it in a popup at <strong>95% of your screen</strong>, right here on the page. <strong>Nova Bot is live now</strong>, loaded from the nova-bot repo. The slots below are ready for the next projects, each wired the same way.</p>
+          <div class="hero-actions">
+            <button class="btn btn-primary" type="button" data-open-site data-site-name="Nova Bot" data-site-url="https://jordanalbiar.github.io/nova-bot/">Open the Nova Bot website</button>
+            <a class="btn btn-ghost" href="#sites">Browse project slots</a>
+          </div>
+        </div>
+
+        <aside class="hero-panel" aria-label="Portal status">
+          <h2>Portal status</h2>
+          <dl>
+            <div class="stat-row"><dt>Websites live</dt><dd>1</dd></div>
+            <div class="stat-row"><dt>Slots reserved</dt><dd>3</dd></div>
+            <div class="stat-row"><dt>Viewer</dt><dd>95% screen popup</dd></div>
+            <div class="stat-row"><dt>Host</dt><dd>GitHub Pages</dd></div>
+            <div class="stat-row"><dt>Latest addition</dt><dd>Nova Bot v1.0</dd></div>
+          </dl>
+        </aside>
+      </div>
+    </section>
+
+    <section aria-labelledby="sites-title">
+      <div class="toolbar" id="sites">
+        <div>
+          <h2 id="sites-title">Project websites</h2>
+          <p id="result-count">Showing 1 live site and 3 reserved slots.</p>
+        </div>
+        <div class="filters" role="group" aria-label="Filter project websites">
+          <button class="filter-btn" type="button" data-filter="all" aria-pressed="true">All</button>
+          <button class="filter-btn" type="button" data-filter="live" aria-pressed="false">Live</button>
+          <button class="filter-btn" type="button" data-filter="soon" aria-pressed="false">Coming soon</button>
+        </div>
+      </div>
+
+      <div class="grid" id="card-grid">
+
+        <article class="card featured" data-status="live">
+          <div class="card-media">
+            <img src="assets/nova-banner.png" alt="Nova Bot v1.0 Phelsuma banner with Nova and a Phelsuma day gecko" />
+          </div>
+          <div class="card-body">
+            <div class="card-top">
+              <span class="badge badge-live"><span class="dot" aria-hidden="true"></span> Live on GitHub Pages</span>
+              <span class="version">v1.0 Phelsuma</span>
+            </div>
+            <h3>Nova Bot</h3>
+            <p class="card-desc">A Discord bot hosted on an Android phone that runs the whole server: moderation and community tools, member and client cards, music in voice channels, and video playlists you can edit and manage. Built for the Albiar community, with 30 plugins under the hood. Its website, the same one built for Nova Bot, lives as HTML in the nova-bot repo, and this portal loads it into a 95% screen popup when you tap Open.</p>
+            <div class="tags" aria-label="Nova Bot highlights">
+              <span class="tag">Discord bot</span>
+              <span class="tag">Android 10+</span>
+              <span class="tag">30 plugins</span>
+              <span class="tag">Whole server control</span>
+            </div>
+            <p class="url-line"><span>Loads:</span> jordanalbiar.github.io/nova-bot</p>
+            <div class="card-actions">
+              <button class="btn btn-primary" type="button" data-open-site data-site-name="Nova Bot" data-site-url="https://jordanalbiar.github.io/nova-bot/">Open Nova Bot website</button>
+              <a class="btn btn-ghost" href="https://github.com/jordanalbiar/nova-bot" target="_blank" rel="noopener">GitHub repo</a>
+              <a class="btn btn-ghost" href="https://github.com/jordanalbiar/nova-bot/releases/download/v1.0/nova-bot-v1.0-phelsuma.apk" target="_blank" rel="noopener">Download APK</a>
+            </div>
+            <p class="host-note">The website is <strong>served by GitHub Pages from the nova-bot repo</strong> and loaded live into the popup. The APK is also on GitHub, in Releases, and the download button goes straight to it.</p>
+          </div>
+        </article>
+
+        <article class="card placeholder" data-status="soon">
+          <div class="placeholder-art" aria-hidden="true">02</div>
+          <div class="card-body">
+            <div class="card-top">
+              <span class="badge badge-soon"><span class="dot" aria-hidden="true"></span> Reserved</span>
+              <span class="version">Slot 02</span>
+            </div>
+            <h3>Next project</h3>
+            <p class="card-desc">This slot is held for the next Albiar website. When that project ships, its site goes into its own GitHub repo and this card opens it in the same 95% popup, wired exactly like the Nova Bot card.</p>
+            <p class="url-line"><span>Loads:</span> in the 95% popup, when built</p>
+            <div class="card-actions">
+              <button class="btn btn-ghost" type="button" data-open-site data-site-name="Coming soon" data-site-url="" disabled>Not built yet</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="card placeholder" data-status="soon">
+          <div class="placeholder-art" aria-hidden="true">03</div>
+          <div class="card-body">
+            <div class="card-top">
+              <span class="badge badge-soon"><span class="dot" aria-hidden="true"></span> Reserved</span>
+              <span class="version">Slot 03</span>
+            </div>
+            <h3>Next project</h3>
+            <p class="card-desc">Reserved for a future build. This card only goes live once that project website is sitting in its GitHub repo, ready to load.</p>
+            <p class="url-line"><span>Loads:</span> in the 95% popup, when built</p>
+            <div class="card-actions">
+              <button class="btn btn-ghost" type="button" data-open-site data-site-name="Coming soon" data-site-url="" disabled>Not built yet</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="card placeholder" data-status="soon">
+          <div class="placeholder-art" aria-hidden="true">04</div>
+          <div class="card-body">
+            <div class="card-top">
+              <span class="badge badge-soon"><span class="dot" aria-hidden="true"></span> Reserved</span>
+              <span class="version">Slot 04</span>
+            </div>
+            <h3>Next project</h3>
+            <p class="card-desc">One more open slot for whatever comes after that. Adding a project means putting its website in its repo and pointing this card at it.</p>
+            <p class="url-line"><span>Loads:</span> in the 95% popup, when built</p>
+            <div class="card-actions">
+              <button class="btn btn-ghost" type="button" data-open-site data-site-name="Coming soon" data-site-url="" disabled>Not built yet</button>
+            </div>
+          </div>
+        </article>
+
+      </div>
+      <p class="empty-note" id="empty-note">Nothing matches that filter yet.</p>
+    </section>
+
+    <section class="how" aria-labelledby="how-title">
+      <div class="how-head">
+        <h2 id="how-title">How the portal works</h2>
+        <p>Every project website is an HTML file in that project's GitHub repo, published with GitHub Pages. The portal loads it into a popup window at 95% of the screen, so each site is one tap away and you never leave this page.</p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <span class="step-num">Step 01</span>
+          <h3>One file at the root</h3>
+          <p>This splash page is what opens at <code>jordanalbiar.github.io</code>. It is the only link you ever need to share.</p>
+        </div>
+        <div class="step">
+          <span class="step-num">Step 02</span>
+          <h3>Websites live in their repos</h3>
+          <p>Each project's website is added to its own GitHub repo as HTML and served by GitHub Pages, the way the Nova Bot website was added to the nova-bot repo.</p>
+        </div>
+        <div class="step">
+          <span class="step-num">Step 03</span>
+          <h3>Open in the popup</h3>
+          <p>Tap a card and the portal loads that repo's website into a popup at 95% of the screen. Close the popup and you are right back at the portal.</p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+</main>
+
+
+  <!-- ================= SITE POPUP VIEWER ================= -->
+  <div class="site-modal" id="site-modal" hidden role="dialog" aria-modal="true" aria-labelledby="site-modal-title">
+    <div class="site-modal-box">
+      <div class="site-modal-bar">
+        <div>
+          <h2 class="site-modal-title" id="site-modal-title">Project website</h2>
+          <span class="site-modal-url" id="site-modal-url"></span>
+        </div>
+        <div class="site-modal-actions">
+          <a class="btn btn-ghost" id="site-modal-open" href="https://jordanalbiar.github.io/nova-bot/" target="_blank" rel="noopener">Open full page &#8599;</a>
+          <button class="btn btn-primary" type="button" id="site-modal-close">Close</button>
+        </div>
+      </div>
+      <div class="site-frame-wrap">
+        <iframe class="site-frame" id="site-frame" title="Project website loaded from its GitHub repo" src="about:blank"></iframe>
+        <div class="site-modal-status" id="site-modal-status">Loading the site from GitHub&#8230;</div>
+      </div>
+    </div>
+  </div>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <p><strong>Albiar</strong> is a father and son designer and developer team, building a network for designers and developers to collaborate. Architectural design, photography, graphic design, and web development, with over 60 years of combined experience.</p>
+      <div class="foot-links">
+        <a href="https://github.com/jordanalbiar" target="_blank" rel="noopener">GitHub: jordanalbiar</a>
+        <a href="mailto:albiarnetwork@gmail.com">albiarnetwork@gmail.com</a>
+      </div>
+    </div>
+    <p class="fineprint">ALBIAR PORTAL &middot; PROJECT SITES LOADED FROM GITHUB &middot; 95% POPUP VIEWER &middot; <span id="year"></span></p>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    /* ---------- Portal filter ---------- */
+    var buttons = Array.prototype.slice.call(document.querySelectorAll('.filter-btn'));
+    var cards = Array.prototype.slice.call(document.querySelectorAll('#card-grid .card'));
+    var count = document.getElementById('result-count');
+    var empty = document.getElementById('empty-note');
+    function apply(filter){
+      var live = 0, soon = 0, visible = 0;
+      cards.forEach(function(card){
+        var status = card.getAttribute('data-status');
+        if(status === 'live') live++; else soon++;
+        var show = filter === 'all' || filter === status;
+        card.classList.toggle('is-hidden', !show);
+        if(show) visible++;
+      });
+      if(filter === 'all') count.textContent = 'Showing ' + live + ' live site' + (live===1?'':'s') + ' and ' + soon + ' reserved slots.';
+      else if(filter === 'live') count.textContent = 'Showing ' + live + ' live site' + (live===1?'':'s') + '.';
+      else count.textContent = 'Showing ' + soon + ' reserved slots.';
+      empty.classList.toggle('show', visible === 0);
+      buttons.forEach(function(b){ b.setAttribute('aria-pressed', b.getAttribute('data-filter') === filter ? 'true' : 'false'); });
+    }
+    buttons.forEach(function(b){
+      b.addEventListener('click', function(){ apply(b.getAttribute('data-filter')); });
+    });
+
+    /* ---------- Site popup viewer: loads a repo's website at 95% of the screen ---------- */
+    var modal = document.getElementById('site-modal');
+    var frame = document.getElementById('site-frame');
+    var status = document.getElementById('site-modal-status');
+    var titleEl = document.getElementById('site-modal-title');
+    var urlEl = document.getElementById('site-modal-url');
+    var openLink = document.getElementById('site-modal-open');
+    var closeBtn = document.getElementById('site-modal-close');
+    var lastFocus = null;
+
+    function openSite(name, url){
+      if(!url) return;
+      lastFocus = document.activeElement;
+      titleEl.textContent = name;
+      urlEl.textContent = url.replace(/^https:\/\//, '');
+      openLink.href = url;
+      status.hidden = false;
+      status.textContent = 'Loading ' + name + ' from GitHub...';
+      frame.src = url;
+      modal.hidden = false;
+      document.body.classList.add('modal-open');
+      closeBtn.focus();
+    }
+    function closeSite(){
+      if(modal.hidden) return;
+      modal.hidden = true;
+      frame.src = 'about:blank';
+      document.body.classList.remove('modal-open');
+      if(lastFocus && lastFocus.focus) lastFocus.focus();
+    }
+    frame.addEventListener('load', function(){
+      if(frame.src && frame.src !== 'about:blank') status.hidden = true;
+    });
+    closeBtn.addEventListener('click', closeSite);
+    modal.addEventListener('click', function(ev){ if(ev.target === modal) closeSite(); });
+    document.addEventListener('keydown', function(ev){
+      if(ev.key === 'Escape') closeSite();
+    });
+
+    /* Every project card (live or future slot) opens through this same wiring:
+       set data-site-url on the button and it loads that repo's site in the popup. */
+    Array.prototype.slice.call(document.querySelectorAll('[data-open-site]')).forEach(function(b){
+      b.addEventListener('click', function(ev){
+        var url = b.getAttribute('data-site-url');
+        if(!url) return;
+        ev.preventDefault();
+        openSite(b.getAttribute('data-site-name') || 'Project website', url);
+      });
+    });
+  })();
+</script>
+</body>
+</html>
